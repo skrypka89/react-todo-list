@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TaskList from './TaskList';
 
 export type Task  = {
@@ -6,72 +6,58 @@ export type Task  = {
     value: string;
 };
 
-type TasksState = {
-    tasks: Task[];
-    inputValue: string;
-};
+let counter = 2
 
-let counter = 0
+const Tasks = () => {
+    const [tasks, setTasks] = useState<Task[]>([
+        { id: 0, value: 'Go to the gym' },
+        { id: 1, value: 'Create a React todo list based on hooks' }
+    ]);
+    const [inputValue, setInputValue] = useState<string>('');
 
-class Tasks extends React.Component {
-    state: TasksState = {
-        tasks: [],
-        inputValue: ''
+    const createTask = (): void => {
+        const inputValueTrim = inputValue.trim();
+
+        if (inputValueTrim) {
+            setTasks([
+                ...tasks,
+                { id: counter++, value: inputValueTrim }
+            ]);
+            setInputValue('');
+        }
     };
 
-    createTaskHandler = (): void => {
-        let { tasks, inputValue } = this.state;
-        inputValue = inputValue.trim();
+    const changeInputValue = (event: React.ChangeEvent<HTMLInputElement>): void =>
+        setInputValue(event.target.value)
+    ;
 
-        if (inputValue) {
-            this.setState({
-                tasks: [
-                    ...tasks,
-                    {
-                        id: counter++,
-                        value: inputValue
-                    }
-                ],
-                inputValue: ''
-            });
-        }
-    }
-
-    changeInputValueHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        this.setState({ inputValue: event.target.value });
-    }
-
-    onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+    const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
-            this.createTaskHandler();
+            createTask();
         }
-    }
+    };
 
-    deleteTaskHandler = (id: number): void => {
-        const tasks = [...this.state.tasks];
-        const index = tasks.findIndex(task => task.id === id);
-        tasks.splice(index, 1);
-        this.setState({ tasks });
-    }
+    const deleteTask = (id: number): void => {
+        const tasksClone = [...tasks];
+        const index = tasksClone.findIndex(task => task.id === id);
+        tasksClone.splice(index, 1);
+        setTasks(tasksClone);
+    };
 
-    render() {
-        const { tasks, inputValue } = this.state;
-
-        return (
-            <div className="tasks">
-                <div className="form-box">
-                    <input
-                        type="text"
-                        onChange={this.changeInputValueHandler}
-                        onKeyPress={this.onKeyUp}
-                        value={inputValue}
-                    />
-                    <button className="add-button" onClick={this.createTaskHandler}>Add</button>
-                </div>
-                <TaskList delete={this.deleteTaskHandler} tasks={tasks} />
+    return (
+        <div className="tasks">
+            <div className="form-box">
+                <input
+                    type="text"
+                    onChange={changeInputValue}
+                    onKeyPress={onKeyUp}
+                    value={inputValue}
+                />
+                <button className="add-button" onClick={createTask}>Add</button>
             </div>
-        );
-    }
-}
+            <TaskList delete={deleteTask} tasks={tasks} />
+        </div>
+    );
+};
 
 export default Tasks;

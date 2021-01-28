@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type TaskProps = {
     id: number;
@@ -6,37 +6,28 @@ type TaskProps = {
     value: string;
 };
 
-type TaskState = {
-    done: boolean;
-};
+const TaskListItem = (props: TaskProps) => {
+    const [done, setDone] = useState<boolean>(false);
+    const doneClass = done ? 'done' : 'undone';
+    const doneText = done ? 'Done' : 'Undone';
+    const { id, value, onDelete } = props;
 
-class TaskListItem extends React.Component<TaskProps> {
-    state: TaskState = {
-        done: false
-    };
+    const changeState = (): void =>
+        setDone(true)
+    ;
 
-    changeStateHandler = (): void => {
-        this.setState({ done: true });
-    }
-
-    render() {
-        const doneClass = this.state.done ? 'done' : 'undone';
-        const doneText = this.state.done ? 'Done' : 'Undone';
-        const { id, value, onDelete } = this.props;
-
-        return (
-            <div className={`task ${doneClass}`}>
-                <div className="text-box">
-                    <span className="id">{id + '. '}</span>
-                    <span className="text">{value}</span>
-                </div>
-                <div className="botton-box">
-                    <button onClick={this.changeStateHandler}>{doneText}</button>
-                    <button className="x-botton" onClick={onDelete}>X</button>
-                </div>
+    return (
+        <div className={`task ${doneClass}`}>
+            <div className="text-box">
+                <span className="id">{id + '. '}</span>
+                <span className="text">{value}</span>
             </div>
-        );
-    }
-}
+            <div className="botton-box">
+                <button onClick={changeState}>{doneText}</button>
+                <button className="x-botton" onClick={onDelete}>X</button>
+            </div>
+        </div>
+    );
+};
 
 export default TaskListItem;

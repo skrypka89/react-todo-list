@@ -7,7 +7,7 @@ type TaskListProps = {
     tasks: Task[];
 };
 
-function TaskList(props: TaskListProps) {
+const TaskList = (props: TaskListProps) => {
     return (
         <div className="taskList">
             {props.tasks.map((task, i) => {
@@ -20,6 +20,6 @@ function TaskList(props: TaskListProps) {
             })}
         </div>
     );
-}
+};
 
 export default TaskList;
