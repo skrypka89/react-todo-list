@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TaskList from './TaskList';
 
 export type Task  = {
@@ -9,11 +9,13 @@ export type Task  = {
 let counter = 2
 
 const Tasks = () => {
-    const [tasks, setTasks] = useState<Task[]>([
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [inputValue, setInputValue] = useState<string>('');
+
+    useEffect(() => setTasks([
         { id: 0, value: 'Go to the gym' },
         { id: 1, value: 'Create a React todo list based on hooks' }
-    ]);
-    const [inputValue, setInputValue] = useState<string>('');
+    ]), []);
 
     const createTask = (): void => {
         const inputValueTrim = inputValue.trim();
