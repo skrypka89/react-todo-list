@@ -6,40 +6,68 @@ export type Task  = {
     value: string;
 };
 
-type FetchedTask = {
-    userId: number;
+type AirlineData = {
     id: number;
-    title: string;
-    completed: boolean;
+    name: string;
+    country: string;
+    logo: string;
+    slogan: string;
+    head_quaters: string;
+    website: string;
+    established: string;
 };
 
-let counter = 5
+type FetchedData = {
+    _id: string;
+    name: string;
+    trips: number;
+    airline: AirlineData | AirlineData[];
+    __v: number;
+};
+
+type Fetched = {
+    totalPassengers: number;
+    totalPages: number;
+    data: FetchedData[];
+};
+
+let counter = 0
 
 const Tasks = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [inputValue, setInputValue] = useState<string>('');
+    const [pageNumber, setPageNumber] = useState<number>(1);
 
     useEffect(() => {
         const getInitialTasks = async () => {
-            const arr = await fetchTask();
-            console.log('hi');
-            const initialTasks = convertFetchedTask(arr);
-            setTasks(initialTasks);
+            const fetched = await fetchInitialPageData();
+            const initialPage = getPageFromFetched(fetched);
+            setTasks(initialPage);
         };
         
-        getInitialTasks()
+        getInitialTasks();
     }, []);
 
-    const fetchTask = async (): Promise<FetchedTask[]> => {
-        const response = await fetch('https://jsonplaceholder.typicode.com/todos/');
-        const fetchedTask = await response.json() as FetchedTask[];
-        return fetchedTask;
+    const fetchInitialPageData = async (): Promise<Fetched> => {
+        const response = await fetch(`https://api.instantwebtools.net/v1/passenger?page=0&size=5`);
+        const fetched = await response.json() as Fetched;
+        return fetched;
     };
 
-    const convertFetchedTask = (arr: FetchedTask[]): Task[] =>
-        arr.map((task, index) =>
-            ({ id: index, value: task.title })
-        ).slice(0, 5)
+    const fetchPageData = async (): Promise<Fetched> => {
+        const response = await fetch(`https://api.instantwebtools.net/v1/passenger?page=${pageNumber}&size=5`);
+        const fetched = await response.json() as Fetched;
+        return fetched;
+    };
+
+    const getPageFromFetched = (fetched: Fetched): Task[] =>
+        fetched.data.map(datum => {
+            if ('length' in datum.airline) {
+                return { id: counter++, value: datum.airline[0].slogan };
+            } else {
+                return { id: counter++, value: datum.airline.slogan };
+            }
+        })
     ;
 
     const createTask = (): void => {
@@ -64,6 +92,13 @@ const Tasks = () => {
         }
     };
 
+    const loadPage = async (): Promise<void> => {
+        setPageNumber(pageNumber + 1);
+        const fetched = await fetchPageData();
+        const page = getPageFromFetched(fetched);
+        setTasks([...tasks, ...page]);
+    };
+
     const deleteTask = (id: number): void => {
         const tasksClone = [...tasks];
         const index = tasksClone.findIndex(task => task.id === id);
@@ -83,6 +118,7 @@ const Tasks = () => {
                 <button className="add-button" onClick={createTask}>Add</button>
             </div>
             <TaskList delete={deleteTask} tasks={tasks} />
+            <button className="load-more-button" onClick={loadPage}>Load more</button>
         </div>
     );
 };

@@ -13,6 +13,16 @@
     border-radius: 10px;
 }
 
+.load-more-button {
+    align-self: center;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
 .tasks {
     display: flex;
     flex-direction: column;
