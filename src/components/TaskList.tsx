@@ -10,9 +10,9 @@ type TaskListProps = {
 const TaskList = (props: TaskListProps) => {
     return (
         <div className="taskList">
-            {props.tasks.map((task, i) => {
+            {props.tasks.map((task, index) => {
                 return <TaskListItem
-                    id={i + 1}
+                    id={index + 1}
                     onDelete={() => props.delete(task.id)}
                     key={task.id}
                     value={task.value}

@@ -6,16 +6,41 @@ export type Task  = {
     value: string;
 };
 
-let counter = 2
+type FetchedTask = {
+    userId: number;
+    id: number;
+    title: string;
+    completed: boolean;
+};
+
+let counter = 5
 
 const Tasks = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [inputValue, setInputValue] = useState<string>('');
 
-    useEffect(() => setTasks([
-        { id: 0, value: 'Go to the gym' },
-        { id: 1, value: 'Create a React todo list based on hooks' }
-    ]), []);
+    useEffect(() => {
+        const getInitialTasks = async () => {
+            const arr = await fetchTask();
+            console.log('hi');
+            const initialTasks = convertFetchedTask(arr);
+            setTasks(initialTasks);
+        };
+        
+        getInitialTasks()
+    }, []);
+
+    const fetchTask = async (): Promise<FetchedTask[]> => {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/');
+        const fetchedTask = await response.json() as FetchedTask[];
+        return fetchedTask;
+    };
+
+    const convertFetchedTask = (arr: FetchedTask[]): Task[] =>
+        arr.map((task, index) =>
+            ({ id: index, value: task.title })
+        ).slice(0, 5)
+    ;
 
     const createTask = (): void => {
         const inputValueTrim = inputValue.trim();
