@@ -1,5 +1,5 @@
 import React from 'react';
-import { Task } from './Tasks';
+import { Task } from './Home';
 import TaskListItem from './TaskListItem';
 
 type TaskListProps = {

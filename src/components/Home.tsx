@@ -33,7 +33,7 @@ type Fetched = {
 
 let counter = 0
 
-const Tasks = () => {
+const Home = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [inputValue, setInputValue] = useState<string>('');
     const [pageNumber, setPageNumber] = useState<number>(1);
@@ -113,4 +113,4 @@ const Tasks = () => {
     );
 };
 
-export default Tasks;
+export default Home;
