@@ -40,7 +40,7 @@ const Tasks = () => {
 
     useEffect(() => {
         const getInitialTasks = async () => {
-            const fetched = await fetchInitialPageData();
+            const fetched = await fetchPageData(0);
             const initialPage = getPageFromFetched(fetched);
             setTasks(initialPage);
         };
@@ -48,13 +48,7 @@ const Tasks = () => {
         getInitialTasks();
     }, []);
 
-    const fetchInitialPageData = async (): Promise<Fetched> => {
-        const response = await fetch(`https://api.instantwebtools.net/v1/passenger?page=0&size=5`);
-        const fetched = await response.json() as Fetched;
-        return fetched;
-    };
-
-    const fetchPageData = async (): Promise<Fetched> => {
+    const fetchPageData = async (pageNumber: number): Promise<Fetched> => {
         const response = await fetch(`https://api.instantwebtools.net/v1/passenger?page=${pageNumber}&size=5`);
         const fetched = await response.json() as Fetched;
         return fetched;
@@ -62,7 +56,7 @@ const Tasks = () => {
 
     const getPageFromFetched = (fetched: Fetched): Task[] =>
         fetched.data.map(datum => {
-            if ('length' in datum.airline) {
+            if (Array.isArray(datum.airline)) {
                 return { id: counter++, value: datum.airline[0].slogan };
             } else {
                 return { id: counter++, value: datum.airline.slogan };
@@ -82,10 +76,6 @@ const Tasks = () => {
         }
     };
 
-    const changeInputValue = (event: React.ChangeEvent<HTMLInputElement>): void =>
-        setInputValue(event.target.value)
-    ;
-
     const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
             createTask();
@@ -94,7 +84,7 @@ const Tasks = () => {
 
     const loadPage = async (): Promise<void> => {
         setPageNumber(pageNumber + 1);
-        const fetched = await fetchPageData();
+        const fetched = await fetchPageData(pageNumber);
         const page = getPageFromFetched(fetched);
         setTasks([...tasks, ...page]);
     };
@@ -111,7 +101,7 @@ const Tasks = () => {
             <div className="form-box">
                 <input
                     type="text"
-                    onChange={changeInputValue}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setInputValue(event.target.value)}
                     onKeyPress={onKeyUp}
                     value={inputValue}
                 />
