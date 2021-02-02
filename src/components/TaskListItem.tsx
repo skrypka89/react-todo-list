@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 type TaskProps = {
     id: number;
-    onDelete: () => void;
+    userId: string;
     value: string;
+    onDelete: () => void;
 };
 
 const TaskListItem = (props: TaskProps) => {
     const [done, setDone] = useState<boolean>(false);
     const doneClass = done ? 'done' : 'undone';
     const doneText = done ? 'Done' : 'Undone';
-    const { id, value, onDelete } = props;
+    const { id, userId, value, onDelete } = props;
 
     const changeState = (): void =>
         setDone(true)
@@ -21,6 +23,9 @@ const TaskListItem = (props: TaskProps) => {
             <div className="text-box">
                 <span className="id">{id + '. '}</span>
                 <span className="text">{value}</span>
+            </div>
+            <div className="link-box">
+                <Link to={`/second-page/${userId}`}>View details</Link>
             </div>
             <div className="botton-box">
                 <button onClick={changeState}>{doneText}</button>

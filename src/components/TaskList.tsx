@@ -12,10 +12,11 @@ const TaskList = (props: TaskListProps) => {
         <div className="taskList">
             {props.tasks.map((task, index) => {
                 return <TaskListItem
-                    id={index + 1}
-                    onDelete={() => props.delete(task.id)}
                     key={task.id}
+                    id={index + 1}
+                    userId={task.userId}
                     value={task.value}
+                    onDelete={() => props.delete(task.id)}
                 />
             })}
         </div>

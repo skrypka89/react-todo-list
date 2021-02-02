@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import TaskList from './TaskList';
 
 export type Task  = {
     id: number;
+    userId: string;
     value: string;
 };
 
-type AirlineData = {
+export type AirlineData = {
     id: number;
     name: string;
     country: string;
@@ -17,7 +19,7 @@ type AirlineData = {
     established: string;
 };
 
-type FetchedData = {
+export type FetchedData = {
     _id: string;
     name: string;
     trips: number;
@@ -57,9 +59,17 @@ const Home = () => {
     const getPageFromFetched = (fetched: Fetched): Task[] =>
         fetched.data.map(datum => {
             if (Array.isArray(datum.airline)) {
-                return { id: counter++, value: datum.airline[0].slogan };
+                return {
+                    id: counter++,
+                    userId: datum._id,
+                    value: datum.airline[0].slogan
+                };
             } else {
-                return { id: counter++, value: datum.airline.slogan };
+                return {
+                    id: counter++,
+                    userId: datum._id,
+                    value: datum.airline.slogan
+                };
             }
         })
     ;
@@ -70,7 +80,11 @@ const Home = () => {
         if (inputValueTrim) {
             setTasks([
                 ...tasks,
-                { id: counter++, value: inputValueTrim }
+                {
+                    id: counter++,
+                    userId: uuidv4(),
+                    value: inputValueTrim
+                }
             ]);
             setInputValue('');
         }

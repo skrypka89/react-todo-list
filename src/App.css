@@ -12,7 +12,7 @@ button {
 }
 
 input {
-    width: 300px;
+    width: 440px;
 }
 
 h2 {
@@ -34,7 +34,7 @@ h2 {
 .pages-list {
     display: flex;
     justify-content: space-between;
-    width: 360px;
+    width: 500px;
     padding: 0;
     list-style-type: none;
 }
@@ -62,14 +62,14 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-top: 50px;
+    padding-top: 60px;
 }
 
 .taskList {
     display: flex;
     flex-direction: column;
-    width: 360px;
-    padding: 20px 0;
+    width: 500px;
+    padding: 10px 0;
 }
 
 .task {
@@ -124,4 +124,20 @@ h2 {
     color: white;
     border: none;
     border-radius: 5px;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    padding-top: 60px;
+    word-break: break-all;
+}
+
+.details > p {
+    margin: 10px 0;
+}
+
+.bold-text {
+    font-weight: bold;
 }
