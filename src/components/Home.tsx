@@ -1,117 +1,101 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import TaskList from './TaskList';
-
-export type Task  = {
-    id: number;
-    userId: string;
-    value: string;
-};
-
-export type AirlineData = {
-    id: number;
-    name: string;
-    country: string;
-    logo: string;
-    slogan: string;
-    head_quaters: string;
-    website: string;
-    established: string;
-};
-
-export type FetchedData = {
-    _id: string;
-    name: string;
-    trips: number;
-    airline: AirlineData | AirlineData[];
-    __v: number;
-};
-
-type Fetched = {
-    totalPassengers: number;
-    totalPages: number;
-    data: FetchedData[];
-};
-
-let counter = 0
+import { Item, Fetched } from '../models/AppModel';
+import appController from '../controllers/AppController';
+import List from './List';
 
 const Home = () => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [items, setItems] = useState<Item[]>(appController.getItems());
     const [inputValue, setInputValue] = useState<string>('');
-    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [pageNumber, setPageNumber] = useState<number>(appController.getPageNumber());
+    const counter = useRef<number>(appController.getCounter());
 
     useEffect(() => {
-        const getInitialTasks = async () => {
-            const fetched = await fetchPageData(0);
-            const initialPage = getPageFromFetched(fetched);
-            setTasks(initialPage);
+        const getInitialData = async () => {
+            if (appController.getItems().length) {
+                return;
+            }
+
+            const fetched = await appController.fetchPassengers(0);
+            const initialItems = getItemsFromFetched(fetched);
+            setItems(initialItems);
         };
         
-        getInitialTasks();
-    }, []);
-
-    const fetchPageData = async (pageNumber: number): Promise<Fetched> => {
-        const response = await fetch(`https://api.instantwebtools.net/v1/passenger?page=${pageNumber}&size=5`);
-        const fetched = await response.json() as Fetched;
-        return fetched;
-    };
-
-    const getPageFromFetched = (fetched: Fetched): Task[] =>
-        fetched.data.map(datum => {
-            if (Array.isArray(datum.airline)) {
-                return {
-                    id: counter++,
-                    userId: datum._id,
-                    value: datum.airline[0].slogan
-                };
-            } else {
-                return {
-                    id: counter++,
-                    userId: datum._id,
-                    value: datum.airline.slogan
-                };
-            }
-        })
-    ;
-
-    const createTask = (): void => {
-        const inputValueTrim = inputValue.trim();
-
-        if (inputValueTrim) {
-            setTasks([
-                ...tasks,
-                {
-                    id: counter++,
-                    userId: uuidv4(),
-                    value: inputValueTrim
-                }
-            ]);
-            setInputValue('');
-        }
-    };
+        const count = counter.current;
+        getInitialData();
+        return () => {
+            appController.setItems(items);
+            appController.setPageNumber(pageNumber);
+            appController.setCounter(count);
+        };
+    }, [items, pageNumber]);
 
     const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
-            createTask();
+            createItem();
         }
+    };
+
+    const createItem = (): void => {
+        const inputValueTrim = inputValue.trim();
+
+        if (!inputValueTrim) {
+            return;
+        }
+
+        const item: Item = {
+            id: counter.current++,
+            passengerId: uuidv4(),
+            value: inputValueTrim,
+            done: false
+        };
+        setItems([...items, item]);
+        setInputValue('');
+    };
+
+    const changeDone = (id: number): void => {
+        const itemsClone = [...items];
+        const index = itemsClone.findIndex(item => item.id === id);
+        itemsClone[index].done = true;
+        setItems(itemsClone);
+    };
+
+    const deleteItem = (id: number): void => {
+        const itemsClone = [...items];
+        const index = itemsClone.findIndex(item => item.id === id);
+        itemsClone.splice(index, 1);
+        setItems(itemsClone);
+    };
+
+    const getItemsFromFetched = (fetched: Fetched): Item[] => {
+        return fetched.data.map(datum => {
+            if (Array.isArray(datum.airline)) {
+                return {
+                    id: counter.current++,
+                    passengerId: datum._id,
+                    value: datum.airline[0].slogan,
+                    done: false
+                };
+            } else {
+                return {
+                    id: counter.current++,
+                    passengerId: datum._id,
+                    value: datum.airline.slogan,
+                    done: false
+                };
+            }
+        });
     };
 
     const loadPage = async (): Promise<void> => {
         setPageNumber(pageNumber + 1);
-        const fetched = await fetchPageData(pageNumber);
-        const page = getPageFromFetched(fetched);
-        setTasks([...tasks, ...page]);
-    };
-
-    const deleteTask = (id: number): void => {
-        const tasksClone = [...tasks];
-        const index = tasksClone.findIndex(task => task.id === id);
-        tasksClone.splice(index, 1);
-        setTasks(tasksClone);
+        const fetched = await appController.fetchPassengers(pageNumber);
+        const page = getItemsFromFetched(fetched);
+        setItems([...items, ...page]);
     };
 
     return (
-        <div className="tasks">
+        <div className="home">
             <div className="form-box">
                 <input
                     type="text"
@@ -119,9 +103,13 @@ const Home = () => {
                     onKeyPress={onKeyUp}
                     value={inputValue}
                 />
-                <button className="add-button" onClick={createTask}>Add</button>
+                <button className="add-button" onClick={createItem}>Add</button>
             </div>
-            <TaskList delete={deleteTask} tasks={tasks} />
+            <List
+                items={items}
+                onSetDone={changeDone}
+                onDelete={deleteItem}
+            />
             <button className="load-more-button" onClick={loadPage}>Load more</button>
         </div>
     );

@@ -58,21 +58,21 @@ h2 {
     border-radius: 10px;
 }
 
-.tasks {
+.home {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding-top: 60px;
 }
 
-.taskList {
+.list {
     display: flex;
     flex-direction: column;
     width: 500px;
     padding: 10px 0;
 }
 
-.task {
+.item {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -80,25 +80,25 @@ h2 {
     padding: 10px;
 }
 
-.task:last-child {
+.item:last-child {
     margin-bottom: 0;
 }
 
-.task.undone {
+.item.undone {
     border: 1px solid red;
     box-shadow: 0 0 3px red;
 }
 
-.task.undone .x-botton {
+.item.undone .x-botton {
     background-color: red;
 }
 
-.task.done {
+.item.done {
     border: 1px solid green;
     box-shadow: 0 0 3px green;
 }
 
-.task.done .x-botton {
+.item.done .x-botton {
     background-color: green;
 }
 

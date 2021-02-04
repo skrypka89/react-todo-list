@@ -6,7 +6,7 @@ import Home from './components/Home';
 import SecondPage from './components/SecondPage';
 import Details from './components/Details';
 
-class App extends React.Component {
+const App = class extends React.Component {
     render() {
         return (
             <div className="app">
@@ -15,12 +15,12 @@ class App extends React.Component {
                     <Switch>
                         <Route exact path="/" component={Home} />
                         <Route exact path="/second-page" component={SecondPage} />
-                        <Route path="/second-page/:userId" component={Details} />
+                        <Route path="/second-page/:passengerId" component={Details} />
                     </Switch>
                 </Router>
             </div>
         );
     }
-}
+};
 
 export default App;
