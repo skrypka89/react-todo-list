@@ -15,9 +15,9 @@ const Details = () => {
             <p><span className="bold-text">Name: </span>{data.name}</p>
             <p><span className="bold-text">Country: </span>{data.country}</p>
             <p><span className="bold-text">Logo: </span>{data.logo}</p>
-            <img src={data.logo} alt=""/>
             <p><span className="bold-text">Slogan: </span>{data.slogan}</p>
             <p><span className="bold-text">Head quaters: </span>{data.head_quaters}</p>
+            <img  className="logo" src={data.logo} alt=""/>
         </div>
     );
 };

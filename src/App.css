@@ -141,3 +141,7 @@ h2 {
 .bold-text {
     font-weight: bold;
 }
+
+.logo {
+    align-self: flex-start;
+}

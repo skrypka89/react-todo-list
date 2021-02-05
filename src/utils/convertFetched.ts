@@ -1,6 +1,6 @@
 import { Fetched, Item } from '../models/AppModel';
 
-export default function getItemsFromFetched(fetched: Fetched): Item[] {
+export default function convertFetched(fetched: Fetched): Item[] {
     return fetched.data.map(datum => {
         if (Array.isArray(datum.airline)) {
             return {

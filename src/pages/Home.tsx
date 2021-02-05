@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { Item } from '../models/AppModel';
 import appController from '../controllers/AppController';
 import List from '../components/List';
@@ -34,29 +33,19 @@ const Home = () => {
             return;
         }
 
-        const item: Item = {
-            passengerId: uuidv4().toString(),
-            value: inputValueTrim,
-            done: false,
-        };
-
-        appController.addItem(item);
+        appController.createItem(inputValueTrim);
         setItems(appController.items);
         setInputValue('');
     };
 
-    const changeDone = (id: string): void => {
-        const itemsClone = [...items];
-        const index = itemsClone.findIndex(item => item.passengerId === id);
-        itemsClone[index].done = true;
-        setItems(itemsClone);
+    const updateItem = (passengerId: string): void => {
+        appController.updateItem(passengerId, { done: true });
+        setItems([...appController.items]);
     };
 
-    const deleteItem = (id: string): void => {
-        const itemsClone = [...items];
-        const index = itemsClone.findIndex(item => item.passengerId === id);
-        itemsClone.splice(index, 1);
-        setItems(itemsClone);
+    const deleteItem = (passengerId: string): void => {
+        appController.deleteItem(passengerId);
+        setItems([...appController.items]);
     };
 
     const loadPage = async (): Promise<void> => {
@@ -77,7 +66,7 @@ const Home = () => {
             </div>
             <List
                 items={items}
-                onSetDone={changeDone}
+                onSetDone={updateItem}
                 onDelete={deleteItem}
             />
             <button className="load-more-button" onClick={loadPage}>Load more</button>
