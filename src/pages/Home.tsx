@@ -3,27 +3,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { Item } from '../models/AppModel';
 import appController from '../controllers/AppController';
 import List from '../components/List';
-import convertItemsFromFetched from '../utils/convertFetchedItems';
 
 const Home = () => {
     const [inputValue, setInputValue] = useState<string>('');
-    const [items, setItems] = useState<Item[]>(appController.getItems());
+    const [items, setItems] = useState<Item[]>(appController.items);
 
     useEffect(() => {
         const getInitialData = async () => {
-            if (appController.getItems().length) {
+            if (appController.items.length) {
                 return;
             }
 
-            const fetched = await appController.loadMore();
-            const initialItems = convertItemsFromFetched(fetched);
-            setItems(initialItems);
+            await appController.loadMore();
+            setItems(appController.items);
         };
-        
+
         getInitialData();
-        return () => {
-            appController.setItems(items);
-        };
     }, [items]);
 
     const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -42,9 +37,11 @@ const Home = () => {
         const item: Item = {
             passengerId: uuidv4().toString(),
             value: inputValueTrim,
-            done: false
+            done: false,
         };
-        setItems([...items, item]);
+
+        appController.addItem(item);
+        setItems(appController.items);
         setInputValue('');
     };
 
@@ -63,12 +60,10 @@ const Home = () => {
     };
 
     const loadPage = async (): Promise<void> => {
-        const fetched = await appController.loadMore();
-        const page = convertItemsFromFetched(fetched);
-        setItems([...items, ...page]);
+        await appController.loadMore();
+        setItems(appController.items);
     };
 
-    console.log(0, '_render')
     return (
         <div className="home">
             <div className="form-box">

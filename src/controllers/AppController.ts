@@ -1,10 +1,15 @@
 import { FetchedData, Item, Fetched } from '../models/AppModel';
+import convertItemsFromFetched from '../utils/convertFetchedItems';
 
 interface IAppController {
-    loadMore(): Promise<Fetched>;
+    readonly items: Item[];
+
+    loadMore(): Promise<void>;
     getPassenger(passengerId: string): FetchedData | undefined;
-    setItems(items: Item[]): void;
-    getItems(): Item[];
+    addItem(item: Item): void;
+
+    deleteItem(itemId: string): void;
+    updateItem(item: Item): void;
 }
 
 class AppController implements IAppController {
@@ -19,30 +24,44 @@ class AppController implements IAppController {
     }
 
     public async loadMore() {
-        let items = {} as Fetched;
+        let fetchedPassengers = {} as Fetched;
 
         try {
-            items = await this._fetchPassengers(this._pageNumber);
-            this._passengers.push(...items.data);
+            fetchedPassengers = await this._fetchPassengers(this._pageNumber);
+            this._passengers = this._passengers.concat(fetchedPassengers.data);
+            const convertedItems = convertItemsFromFetched(fetchedPassengers);
+            this._items = this._items.concat(convertedItems);
             this._pageNumber++;
 
         } catch (error) {
             console.log('Load more', error);
-        } finally {
-            return items;
         }
     }
+
+    get items() { return this._items; }
 
     getPassenger(passengerId: string): FetchedData | undefined {
         return this._passengers.find(datum => datum!._id === passengerId);
     }
 
-    setItems(items: Item[]): void {
-        this._items = [...items];
+    addItem(item: Item) {
+        if (!item) {
+            return;
+        }
+
+        const isExist = this.items.find(el => el.passengerId === item.passengerId);
+
+        if (!isExist) {
+            this._items.push(item);
+        }
     }
 
-    getItems(): Item[] {
-        return this._items;
+    deleteItem(itemId: string) {
+
+    }
+
+    updateItem(item: Item) {
+
     }
 };
 
