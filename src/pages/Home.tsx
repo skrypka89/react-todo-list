@@ -1,14 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Item, Fetched } from '../models/AppModel';
+import { Item } from '../models/AppModel';
 import appController from '../controllers/AppController';
-import List from './List';
+import List from '../components/List';
+import convertItemsFromFetched from '../utils/convertFetchedItems';
 
 const Home = () => {
-    const [items, setItems] = useState<Item[]>(appController.getItems());
     const [inputValue, setInputValue] = useState<string>('');
-    const [pageNumber, setPageNumber] = useState<number>(appController.getPageNumber());
-    const counter = useRef<number>(appController.getCounter());
+    const [items, setItems] = useState<Item[]>(appController.getItems());
 
     useEffect(() => {
         const getInitialData = async () => {
@@ -16,19 +15,16 @@ const Home = () => {
                 return;
             }
 
-            const fetched = await appController.fetchPassengers(0);
-            const initialItems = getItemsFromFetched(fetched);
+            const fetched = await appController.loadMore();
+            const initialItems = convertItemsFromFetched(fetched);
             setItems(initialItems);
         };
         
-        const count = counter.current;
         getInitialData();
         return () => {
             appController.setItems(items);
-            appController.setPageNumber(pageNumber);
-            appController.setCounter(count);
         };
-    }, [items, pageNumber]);
+    }, [items]);
 
     const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {
         if (event.key === 'Enter') {
@@ -44,8 +40,7 @@ const Home = () => {
         }
 
         const item: Item = {
-            id: counter.current++,
-            passengerId: uuidv4(),
+            passengerId: uuidv4().toString(),
             value: inputValueTrim,
             done: false
         };
@@ -53,47 +48,27 @@ const Home = () => {
         setInputValue('');
     };
 
-    const changeDone = (id: number): void => {
+    const changeDone = (id: string): void => {
         const itemsClone = [...items];
-        const index = itemsClone.findIndex(item => item.id === id);
+        const index = itemsClone.findIndex(item => item.passengerId === id);
         itemsClone[index].done = true;
         setItems(itemsClone);
     };
 
-    const deleteItem = (id: number): void => {
+    const deleteItem = (id: string): void => {
         const itemsClone = [...items];
-        const index = itemsClone.findIndex(item => item.id === id);
+        const index = itemsClone.findIndex(item => item.passengerId === id);
         itemsClone.splice(index, 1);
         setItems(itemsClone);
     };
 
-    const getItemsFromFetched = (fetched: Fetched): Item[] => {
-        return fetched.data.map(datum => {
-            if (Array.isArray(datum.airline)) {
-                return {
-                    id: counter.current++,
-                    passengerId: datum._id,
-                    value: datum.airline[0].slogan,
-                    done: false
-                };
-            } else {
-                return {
-                    id: counter.current++,
-                    passengerId: datum._id,
-                    value: datum.airline.slogan,
-                    done: false
-                };
-            }
-        });
-    };
-
     const loadPage = async (): Promise<void> => {
-        setPageNumber(pageNumber + 1);
-        const fetched = await appController.fetchPassengers(pageNumber);
-        const page = getItemsFromFetched(fetched);
+        const fetched = await appController.loadMore();
+        const page = convertItemsFromFetched(fetched);
         setItems([...items, ...page]);
     };
 
+    console.log(0, '_render')
     return (
         <div className="home">
             <div className="form-box">

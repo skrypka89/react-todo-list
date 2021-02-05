@@ -4,8 +4,8 @@ import ListItem from './ListItem';
 
 type ListProps = {
     items: Item[];
-    onSetDone: (id: number) => void;
-    onDelete: (id: number) => void;
+    onSetDone: (id: string) => void;
+    onDelete: (id: string) => void;
 };
 
 const List = (props: ListProps) => {
@@ -13,13 +13,13 @@ const List = (props: ListProps) => {
         <div className="list">
             {props.items.map((item, index) => {
                 return <ListItem
-                    key={item.id}
+                    key={item.passengerId}
                     id={index + 1}
                     passengerId={item.passengerId}
                     value={item.value}
                     done={item.done}
-                    onSetDone={() => props.onSetDone(item.id)}
-                    onDelete={() => props.onDelete(item.id)}
+                    onSetDone={() => props.onSetDone(item.passengerId)}
+                    onDelete={() => props.onDelete(item.passengerId)}
                 />
             })}
         </div>

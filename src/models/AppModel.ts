@@ -1,5 +1,4 @@
 export type Item  = {
-    id: number;
     passengerId: string;
     value: string;
     done: boolean;
