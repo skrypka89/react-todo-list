@@ -1,11 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { observer, useLocalObservable } from "mobx-react";
 import { Item } from '../models/AppModel';
 import appController from '../controllers/AppController';
 import List from '../components/List';
 
-const Home = () => {
-    const [inputValue, setInputValue] = useState<string>('');
-    const [items, setItems] = useState<Item[]>(appController.items);
+type Input = {
+    value: string;
+    setValue: (str: string) => void;
+};
+
+type Items = {
+    values: Item[];
+    setItems: (newItes: Item[]) => void;
+};
+
+const Home = observer(() => {
+    const input = useLocalObservable<Input>(() => ({
+        value: '',
+        setValue(str) {
+            this.value = str;
+        }
+    }));
+    const items = useLocalObservable<Items>(() => ({
+        values: appController.items,
+        setItems(newItems) {
+            this.values = newItems;
+        }
+    }));
 
     useEffect(() => {
         const getInitialData = async () => {
@@ -14,7 +35,7 @@ const Home = () => {
             }
 
             await appController.loadMore();
-            setItems(appController.items);
+            items.setItems(appController.items);
         };
 
         getInitialData();
@@ -27,30 +48,30 @@ const Home = () => {
     };
 
     const createItem = (): void => {
-        const inputValueTrim = inputValue.trim();
+        const inputValueTrim = input.value.trim();
 
         if (!inputValueTrim) {
             return;
         }
 
         appController.createItem(inputValueTrim);
-        setItems(appController.items);
-        setInputValue('');
+        items.setItems(appController.items);
+        input.setValue('');
     };
 
     const updateItem = (passengerId: string): void => {
         appController.updateItem(passengerId, { done: true });
-        setItems([...appController.items]);
+        items.setItems(appController.items);
     };
 
     const deleteItem = (passengerId: string): void => {
         appController.deleteItem(passengerId);
-        setItems([...appController.items]);
+        items.setItems(appController.items);
     };
 
     const loadPage = async (): Promise<void> => {
         await appController.loadMore();
-        setItems(appController.items);
+        items.setItems(appController.items);
     };
 
     return (
@@ -58,20 +79,20 @@ const Home = () => {
             <div className="form-box">
                 <input
                     type="text"
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => setInputValue(event.target.value)}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => input.setValue(event.target.value)}
                     onKeyPress={onKeyUp}
-                    value={inputValue}
+                    value={input.value}
                 />
                 <button className="add-button" onClick={createItem}>Add</button>
             </div>
             <List
-                items={items}
+                items={items.values}
                 onSetDone={updateItem}
                 onDelete={deleteItem}
             />
             <button className="load-more-button" onClick={loadPage}>Load more</button>
         </div>
     );
-};
+});
 
 export default Home;
