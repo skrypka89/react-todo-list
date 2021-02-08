@@ -1,3 +1,4 @@
+import { observable } from 'mobx';
 import { v4 as uuidv4 } from 'uuid';
 import { FetchedData, Item, Fetched } from '../models/AppModel';
 import convertFetched from '../utils/convertFetched';
@@ -14,6 +15,8 @@ interface IAppController {
 class AppController implements IAppController {
     private _pageNumber: number = 0;
     private _passengers: FetchedData[] = [];
+
+    @observable
     private _items: Item[] = [];
 
     private async _fetchPassengers(pageNumber: number, size: number = 5) {
