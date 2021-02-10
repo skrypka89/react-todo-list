@@ -1,4 +1,4 @@
-import { observable, makeObservable, action } from 'mobx';
+import { observable, makeObservable, autorun, action } from 'mobx';
 import { Item } from '../../models/AppModel';
 import appController from '../../controllers/AppController';
 
@@ -11,6 +11,13 @@ export default class HomeViewModel {
 
     constructor() {
         makeObservable(this);
+        autorun(() => {
+            if (this._isVisible) {
+                console.log('true');
+            } else {
+                console.log('false');
+            }
+        });
     }
 
     get inputValue(): string {

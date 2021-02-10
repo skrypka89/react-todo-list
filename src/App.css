@@ -69,14 +69,6 @@ h2 {
     align-self: center;
 }
 
-.false {
-    visibility: hidden;
-}
-
-.true {
-    visibility: visible;
-}
-
 .list {
     display: flex;
     flex-direction: column;
