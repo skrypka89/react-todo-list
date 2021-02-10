@@ -1,10 +1,14 @@
-import { observable } from 'mobx';
+import { observable, makeObservable, action } from 'mobx';
 import { Item } from '../../models/AppModel';
 import appController from '../../controllers/AppController';
 
 export default class HomeViewModel {
     @observable
     private _inputValue: string = '';
+
+    constructor() {
+        makeObservable(this);
+    }
 
     get inputValue(): string {
         return this._inputValue;
@@ -14,6 +18,7 @@ export default class HomeViewModel {
         return appController.items;
     }
 
+    @action
     changeInputValue = (event: React.ChangeEvent<HTMLInputElement>): void => {
         this._inputValue = event.target.value;
     };
@@ -24,6 +29,7 @@ export default class HomeViewModel {
         }
     };
 
+    @action
     createItem = (): void => {
         const inputValueTrim = this._inputValue.trim();
 

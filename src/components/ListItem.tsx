@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ type ItemProps = {
     onDelete: () => void;
 };
 
-const ListItem = (props: ItemProps) => {
+const ListItem = observer((props: ItemProps) => {
     const { id, passengerId, value, done, onSetDone, onDelete } = props;
     const doneClass = done ? 'done' : 'undone';
     const doneText = done ? 'Done' : 'Undone';
@@ -30,6 +31,6 @@ const ListItem = (props: ItemProps) => {
             </div>
         </div>
     );
-};
+});
 
 export default ListItem;

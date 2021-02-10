@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { observer } from "mobx-react";
 import HomeViewModel from '../viewModels/pages/HomeViewModel';
 import List from '../components/List';
 
 const Home = observer(() => {
-    const model = new HomeViewModel();
+    const model = useMemo(() => new HomeViewModel(), []); 
     const {
         inputValue,
         items,
