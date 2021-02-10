@@ -6,12 +6,19 @@ export default class HomeViewModel {
     @observable
     private _inputValue: string = '';
 
+    @observable
+    private _isVisible: boolean = false;
+
     constructor() {
         makeObservable(this);
     }
 
     get inputValue(): string {
         return this._inputValue;
+    }
+
+    get isVisible(): boolean {
+        return this._isVisible;
     }
 
     get items(): Item[] {
@@ -21,6 +28,8 @@ export default class HomeViewModel {
     @action
     changeInputValue = (event: React.ChangeEvent<HTMLInputElement>): void => {
         this._inputValue = event.target.value;
+        const inputValueTrim = this._inputValue.trim();
+        this._isVisible = inputValueTrim === 'hi';
     };
 
     onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>): void => {

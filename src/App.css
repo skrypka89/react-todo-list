@@ -39,6 +39,13 @@ h2 {
     list-style-type: none;
 }
 
+.home {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 60px;
+}
+
 .add-button {
     margin: 10px 0 10px 10px;
     padding: 10px;
@@ -58,11 +65,16 @@ h2 {
     border-radius: 10px;
 }
 
-.home {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 60px;
+.visible {
+    align-self: center;
+}
+
+.false {
+    visibility: hidden;
+}
+
+.true {
+    visibility: visible;
 }
 
 .list {
@@ -84,21 +96,21 @@ h2 {
     margin-bottom: 0;
 }
 
-.item.undone {
+.undone {
     border: 1px solid red;
     box-shadow: 0 0 3px red;
 }
 
-.item.undone .x-botton {
+.undone .x-botton {
     background-color: red;
 }
 
-.item.done {
+.done {
     border: 1px solid green;
     box-shadow: 0 0 3px green;
 }
 
-.item.done .x-botton {
+.done .x-botton {
     background-color: green;
 }
 

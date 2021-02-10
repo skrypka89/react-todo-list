@@ -17,7 +17,7 @@ const ListItem = observer((props: ItemProps) => {
     const doneText = done ? 'Done' : 'Undone';
 
     return (
-        <div className={`item ${doneClass}`}>
+        <div className={`${doneClass} item`}>
             <div className="text-box">
                 <span className="id">{id + '. '}</span>
                 <span className="text">{value}</span>

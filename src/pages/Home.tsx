@@ -1,5 +1,7 @@
-import React, { useMemo, useEffect } from 'react';
 import { observer } from "mobx-react";
+import React, { useMemo, useRef, useEffect } from 'react';
+// import { autorun } from 'mobx';
+import { reaction } from 'mobx';
 import HomeViewModel from '../viewModels/pages/HomeViewModel';
 import List from '../components/List';
 
@@ -7,6 +9,7 @@ const Home = observer(() => {
     const model = useMemo(() => new HomeViewModel(), []); 
     const {
         inputValue,
+        isVisible,
         items,
         changeInputValue,
         onKeyUp,
@@ -15,6 +18,7 @@ const Home = observer(() => {
         deleteItem,
         loadPage
     } = model;
+    const bool = useRef<string>('false');
 
     useEffect(() => {
         const getInitialData = async () => {
@@ -27,6 +31,25 @@ const Home = observer(() => {
 
         getInitialData();
     });
+
+    // autorun(() => {
+    //     if (isVisible) {
+    //         bool.current = 'true';
+    //     } else {
+    //         bool.current = 'false';
+    //     }
+    // });
+    reaction(
+        () => isVisible,
+        isVisible => {
+            if (isVisible) {
+                bool.current = 'true';
+            } else {
+                bool.current = 'false';
+            }
+        },
+        { fireImmediately: true }
+    );
 
     return (
         <div className="home">
@@ -45,6 +68,7 @@ const Home = observer(() => {
                 onDelete={deleteItem}
             />
             <button className="load-more-button" onClick={loadPage}>Load more</button>
+            <p className={`${bool.current} visible`}>Hello, world!</p>
         </div>
     );
 });
